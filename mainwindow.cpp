@@ -13,34 +13,38 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::login()
 {
-    QByteArray postData;
-    postData.append("email=<" + ui->lineEdit->text() + ">&");
-    postData.append("password=<" + ui->lineEdit_2->text() + ">");
+    QUrl url;
 
-    QNetworkRequest request( QUrl("localhost:3000/user/login") );
-           request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QByteArray email = ui->lineEdit->text().toLatin1();
+    QByteArray password = ui->lineEdit_2->text().toLatin1();
+
+    QByteArray postData = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
+
+    url.setUrl("http://localhost:3000/user/login");
+
+    qDebug() << postData.data();
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkAccessManager* net = new QNetworkAccessManager;
     QNetworkReply* reply = net->post(request, postData);
 
-    connect(reply, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedSlot(QNetworkReply*)));
+    connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedSlot(QNetworkReply*)));
 }
 
 void MainWindow::finishedSlot(QNetworkReply* reply)
 {
-    QVariant statusCodeV =
-            reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-
-    if(reply->error() == QNetworkReply::NoError)
-    {
-        ui->label_3->setText("Connexion ok");
-    }
-    else
-    {
-        ui->label_3->setText("Connexion fail");
-    }
-
-    delete reply;
+    if (reply->error() == QNetworkReply::NoError) {
+            //success
+            qDebug() << "Success" <<reply->readAll();
+            delete reply;
+        }
+        else {
+            //failure
+            qDebug() << "Failure" <<reply->errorString();
+            delete reply;
+        }
 }
 
 MainWindow::~MainWindow()
