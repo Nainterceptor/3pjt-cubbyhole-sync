@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtNetwork>
 
 class QNetworkAccessManager;
 
@@ -19,7 +20,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QNetworkAccessManager *network;
+
+public slots:
+    void login();
+    void finishedSlot(QNetworkReply* reply);
 };
 
 #endif // MAINWINDOW_H
