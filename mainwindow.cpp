@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QtNetwork>
+#include <QSystemTrayIcon>
+#include <QtScript/QScriptEngine>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,8 +24,6 @@ void MainWindow::login()
 
     url.setUrl("http://localhost:3000/user/login");
 
-    qDebug() << postData.data();
-
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -35,16 +35,24 @@ void MainWindow::login()
 
 void MainWindow::finishedSlot(QNetworkReply* reply)
 {
-    if (reply->error() == QNetworkReply::NoError) {
-            //success
-            qDebug() << "Success" <<reply->readAll();
-            delete reply;
-        }
-        else {
-            //failure
-            qDebug() << "Failure" <<reply->errorString();
-            delete reply;
-        }
+    QString sReply = (QString)reply->readAll();
+    QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
+
+    QJsonObject jsonObj = jReply.object();
+
+    if (!jsonObj["success"].toBool()) {
+        ui->label_3->setText("identifiants incorrect");
+
+        delete reply;
+    }
+    else if (reply->error() == QNetworkReply::NoError) {
+        QSystemTrayIcon* icon = new QSystemTrayIcon;
+
+        delete reply;
+    }
+    else {
+        delete reply;
+    }
 }
 
 MainWindow::~MainWindow()
