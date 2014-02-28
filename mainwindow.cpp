@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <QtNetwork>
 #include <QDesktopServices>
+#include <QSystemTrayIcon>
+#include <QtScript/QScriptEngine>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,14 +43,22 @@ void MainWindow::login()
 
 void MainWindow::finishedSlot(QNetworkReply* reply)
 {
-    if (reply->error() == QNetworkReply::NoError)
-    {
-        ui->label_3->setText(reply->readAll());
+    QString sReply = (QString)reply->readAll();
+    QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
+
+    QJsonObject jsonObj = jReply.object();
+
+    if (!jsonObj["success"].toBool()) {
+        ui->label_3->setText("Identifiants incorrect");
+
         delete reply;
     }
-    else
-    {
-        ui->label_3->setText(reply->errorString());
+    else if (reply->error() == QNetworkReply::NoError) {
+        QSystemTrayIcon* icon = new QSystemTrayIcon;
+
+        delete reply;
+    }
+    else {
         delete reply;
     }
 }
