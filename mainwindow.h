@@ -23,6 +23,7 @@ private:
 
 public slots:
     void login();
+    void inscription();
     void finishedSlot(QNetworkReply* reply);
 };
 
