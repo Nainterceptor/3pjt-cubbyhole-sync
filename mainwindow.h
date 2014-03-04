@@ -19,18 +19,17 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void setIcon();
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
-    QSystemTrayIcon* icon;
+    QString token;
+
 
 public slots:
     void login();
     void inscription();
     void finishedSlot(QNetworkReply* reply);
-    void explorer();
 };
 
 #endif // MAINWINDOW_H

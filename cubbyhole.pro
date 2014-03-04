@@ -14,8 +14,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    iconbarre.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    iconbarre.h
 
 FORMS    += mainwindow.ui
