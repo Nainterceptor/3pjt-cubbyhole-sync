@@ -36,10 +36,12 @@ void IconBarre::explorer(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
         case QSystemTrayIcon::DoubleClick:
-    {
-        QDesktopServices::openUrl(QUrl("D:/Qt/cubbyfile"));
-    }
-            break;
+            QDesktopServices::openUrl(QUrl("D:/Qt/cubbyfile"));
+        break;
+
+        case QSystemTrayIcon::Trigger:
+            this->showMessage("Information", "Double click or right click to do something");
+        break;
     }
 }
 
