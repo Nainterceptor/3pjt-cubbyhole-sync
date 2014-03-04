@@ -4,6 +4,8 @@
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
 #include <QtScript/QScriptEngine>
+#include <QMenu>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -49,18 +51,46 @@ void MainWindow::finishedSlot(QNetworkReply* reply)
     QJsonObject jsonObj = jReply.object();
 
     if (!jsonObj["success"].toBool()) {
-        ui->label_3->setText("Identifiants incorrect");
+        ui->label_3->setText("Identifiants incorrects");
 
         delete reply;
     }
     else if (reply->error() == QNetworkReply::NoError) {
-        QSystemTrayIcon* icon = new QSystemTrayIcon;
-
         delete reply;
+
+        this->hide();
+        this->setIcon();
+        icon->show();
+        icon->showMessage("Cubbyhole","application connectée");
     }
     else {
         delete reply;
     }
+}
+
+void MainWindow::setIcon()
+{
+    icon = new QSystemTrayIcon(this);
+    QMenu* menu = new QMenu(this);
+
+    QAction* explore = new QAction("Explorer", this);
+    QAction* quit = new QAction("Quitter", this);
+
+    menu->addAction(explore);
+    menu->addAction(quit);
+
+    icon->setContextMenu(menu);
+
+    QIcon image("1.jpg");
+    icon->setIcon(image);
+
+    connect(explore, SIGNAL(triggered()), this, SLOT(explorer()));
+    connect(quit, SIGNAL(triggered()), this, SLOT(close()));
+}
+
+void MainWindow::explorer()
+{
+    QFileDialog::getOpenFileName(this);
 }
 
 MainWindow::~MainWindow()
