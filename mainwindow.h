@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "iconbarre.h"
 #include <QMainWindow>
 #include <QtNetwork>
 #include <QSystemTrayIcon>
@@ -8,6 +9,7 @@
 
 class QNetworkAccessManager;
 class QSystemTrayIcon;
+class IconBarre;
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +23,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QString getToken();
+    void setIconBarre(bool view, QString title, QString message);
+
 
 private:
     Ui::MainWindow *ui;

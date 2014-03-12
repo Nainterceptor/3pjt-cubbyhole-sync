@@ -66,15 +66,21 @@ void MainWindow::finishedSlot(QNetworkReply* reply)
         token = new QString(jsonObj["token"].toString());
 
         Synchro *mySynchro = new Synchro;
-        IconBarre *myIconBarre = new IconBarre;
-        myIconBarre->show();
-        myIconBarre->showMessage("Cubbyhole", "application connectée");
+
+        this->setIconBarre(true, "Cubbyhole", "application connectée");
 
         delete reply;
     }
     else {
         delete reply;
     }
+}
+
+void MainWindow::setIconBarre(bool view, QString title, QString message)
+{
+    IconBarre *myIconBarre = new IconBarre();
+    myIconBarre->setVisible(view);
+    myIconBarre->showMessage(title, message);
 }
 
 MainWindow::~MainWindow()

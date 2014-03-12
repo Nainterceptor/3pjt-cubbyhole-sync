@@ -2,7 +2,10 @@
 #define SYNCHRO_H
 
 #include "mainwindow.h"
+#include "iconbarre.h"
 #include <QNetworkAccessManager>
+#include <QSystemTrayIcon>
+#include <QtNetwork>
 #include <QWidget>
 
 class QNetworkAccessManager;
@@ -16,7 +19,7 @@ public:
     ~Synchro();
 
 private:
-    MainWindow *myMain;
+    IconBarre *iconBarre;
 };
 
 #endif // SYNCHRO_H

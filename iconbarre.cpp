@@ -43,7 +43,7 @@ void IconBarre::explorer(QSystemTrayIcon::ActivationReason reason)
 
 void IconBarre::quit()
 {
-    login = new MainWindow;
+    MainWindow *login = new MainWindow;
     login->close();
 }
 
