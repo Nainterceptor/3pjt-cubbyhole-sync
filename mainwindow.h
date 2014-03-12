@@ -20,16 +20,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    QString getToken();
 
 private:
     Ui::MainWindow *ui;
-    QString token;
-
+    QString *token;
 
 public slots:
     void login();
     void inscription();
-    void finishedSlot(QNetworkReply* reply);
+    void finishedSlot(QNetworkReply *reply);
 };
 
 #endif // MAINWINDOW_H

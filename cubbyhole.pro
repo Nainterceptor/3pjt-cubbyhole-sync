@@ -15,9 +15,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    iconbarre.cpp
+    iconbarre.cpp \
+    synchro.cpp
 
 HEADERS  += mainwindow.h \
-    iconbarre.h
+    iconbarre.h \
+    synchro.h
 
 FORMS    += mainwindow.ui

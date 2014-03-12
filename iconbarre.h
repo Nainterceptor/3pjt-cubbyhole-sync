@@ -16,8 +16,8 @@ public:
     ~IconBarre();
 
 private:
-    MainWindow* login;
-    QMenu* menu;
+    MainWindow *login;
+    QMenu *menu;
 
 public slots:
     void explorer();

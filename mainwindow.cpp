@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "iconbarre.h"
+#include "synchro.h"
 #include <QtNetwork>
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
@@ -14,6 +15,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(inscription()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(login()));
+}
+
+QString MainWindow::getToken()
+{
+    return *token;
 }
 
 void MainWindow::inscription()
@@ -57,9 +63,10 @@ void MainWindow::finishedSlot(QNetworkReply* reply)
     else if (reply->error() == QNetworkReply::NoError) {
 
         this->hide();
-        token = jsonObj["token"].toString();
+        token = new QString(jsonObj["token"].toString());
 
-        IconBarre* myIconBarre = new IconBarre;
+        Synchro *mySynchro = new Synchro;
+        IconBarre *myIconBarre = new IconBarre;
         myIconBarre->show();
         myIconBarre->showMessage("Cubbyhole", "application connectée");
 
