@@ -28,7 +28,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QNetworkReply *reply;
     QString *token;
+    IconBarre *myIconBarre;
 
 public slots:
     void login();

@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include <QSystemTrayIcon>
 #include <QWidget>
+#include <QDir>
 
 class QSystemTrayIcon;
 
@@ -17,6 +18,7 @@ public:
 
 private:
     QMenu *menu;
+    QDir *myDir;
 
 public slots:
     void explorer();

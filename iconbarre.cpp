@@ -10,6 +10,10 @@ IconBarre::IconBarre(QWidget *parent) :
     QSystemTrayIcon(parent)
 {
     menu = new QMenu();
+    myDir = new QDir();
+
+    QString path = QDir::toNativeSeparators(QApplication::applicationDirPath());
+    myDir->setPath(".");
 
     QAction* explore = new QAction("Ouvrir le dossier Cubbyhole", this);
     QAction* quit = new QAction("Quitter", this);
@@ -29,14 +33,18 @@ IconBarre::IconBarre(QWidget *parent) :
 
 void IconBarre::explorer()
 {
-    QDesktopServices::openUrl(QUrl("D:/Qt/cubbyfile"));
+    if (myDir->exists()) {
+        QDesktopServices::openUrl(QUrl("."));
+    } else {
+        this->showMessage("Répertoire introuvable", "Le répertoire " + myDir->path() + " est introuvable");
+    }
 }
 
 void IconBarre::explorer(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
         case QSystemTrayIcon::DoubleClick:
-            QDesktopServices::openUrl(QUrl("D:/Qt/cubbyfile"));
+        explorer();
         break;
     }
 }

@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    myIconBarre = new IconBarre();
 
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(inscription()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(login()));
@@ -43,12 +44,12 @@ void MainWindow::login()
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QNetworkAccessManager* net = new QNetworkAccessManager;
-    QNetworkReply* reply = net->post(request, postData);
+    reply = net->post(request, postData);
 
     connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedSlot(QNetworkReply*)));
 }
 
-void MainWindow::finishedSlot(QNetworkReply* reply)
+void MainWindow::finishedSlot(QNetworkReply *reply)
 {
     QString sReply = (QString)reply->readAll();
     QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
@@ -64,9 +65,7 @@ void MainWindow::finishedSlot(QNetworkReply* reply)
 
         this->hide();
         token = new QString(jsonObj["token"].toString());
-
-        Synchro *mySynchro = new Synchro;
-
+        Synchro *synchro = new Synchro();
         this->setIconBarre(true, "Cubbyhole", "application connectée");
 
         delete reply;
@@ -78,7 +77,6 @@ void MainWindow::finishedSlot(QNetworkReply* reply)
 
 void MainWindow::setIconBarre(bool view, QString title, QString message)
 {
-    IconBarre *myIconBarre = new IconBarre();
     myIconBarre->setVisible(view);
     myIconBarre->showMessage(title, message);
 }
