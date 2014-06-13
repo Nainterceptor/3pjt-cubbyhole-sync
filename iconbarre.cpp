@@ -11,9 +11,7 @@ IconBarre::IconBarre(QWidget *parent) :
 {
     menu = new QMenu();
     myDir = new QDir();
-
-    QString path = QDir::toNativeSeparators(QApplication::applicationDirPath());
-    myDir->setPath(".");
+    myDir->setPath("./Synchro");
 
     QAction* explore = new QAction("Ouvrir le dossier Cubbyhole", this);
     QAction* quit = new QAction("Quitter", this);
@@ -23,7 +21,7 @@ IconBarre::IconBarre(QWidget *parent) :
 
     this->setContextMenu(menu);
 
-    QIcon image("1.jpg");
+    QIcon image("1.ico");
     this->setIcon(image);
 
     connect(explore, SIGNAL(triggered()), this, SLOT(explorer()));
@@ -33,10 +31,12 @@ IconBarre::IconBarre(QWidget *parent) :
 
 void IconBarre::explorer()
 {
-    if (myDir->exists()) {
+    if (myDir->exists())
+    {
         QDesktopServices::openUrl(QUrl("."));
     } else {
-        this->showMessage("Répertoire introuvable", "Le répertoire " + myDir->path() + " est introuvable");
+        MainWindow *myMain = new MainWindow();
+        myMain->setIconBarre(true, "Répertoire introuvable", "Le répertoire " + myDir->path() + " est introuvable");
     }
 }
 

@@ -9,13 +9,32 @@
 Synchro::Synchro(QWidget *parent) :
     QNetworkAccessManager(parent)
 {
-    QDir *myDir = new QDir();
-    IconBarre *myIconBarre = new IconBarre();
-    myDir->setPath(".");
+    myDir = new QDir();
+    myDir->setPath("./Synchro");
+}
 
-    if(myDir->exists())
+bool Synchro::isEmpty()
+{
+    if(myDir->entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries).count() == 0)
     {
-        myIconBarre->explorer();
+        return true;
+    }
+    else return false;
+}
+
+void Synchro::doCheck()
+{
+    myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
+
+    foreach (QFileInfo fileInfo, myDir->entryInfoList())
+    {
+        QFile file(fileInfo.absoluteFilePath());
+        file.open(QIODevice::ReadOnly);
+        QByteArray data = file.readAll();
+        QCryptographicHash md5(QCryptographicHash::Md5);
+        md5.addData(data);
+        QByteArray hah = md5.result();
+        QString attrMD5 = hah.toHex();
     }
 }
 

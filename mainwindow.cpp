@@ -66,7 +66,16 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
         this->hide();
         token = new QString(jsonObj["token"].toString());
         Synchro *synchro = new Synchro();
-        this->setIconBarre(true, "Cubbyhole", "application connectée");
+
+        if(synchro->isEmpty() == true)
+        {
+            this->setIconBarre(true, "Dossiers", "Vous n'avez aucun de document");
+        }
+        else
+        {
+            this->setIconBarre(true, "Cubbyhole", "application connectée");
+            synchro->doCheck();
+        }
 
         delete reply;
     }

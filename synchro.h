@@ -16,10 +16,12 @@ class Synchro : public QNetworkAccessManager
 
 public:
     explicit Synchro(QWidget *parent = 0);
+    bool isEmpty();
+    void doCheck();
     ~Synchro();
 
 private:
-    IconBarre *iconBarre;
+    QDir *myDir;
 };
 
 #endif // SYNCHRO_H
