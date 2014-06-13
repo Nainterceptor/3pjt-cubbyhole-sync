@@ -32,13 +32,12 @@ void MainWindow::inscription()
 void MainWindow::login()
 {
     QUrl url;
+    url.setUrl("http://localhost:3000/user/login");
 
     QByteArray email = ui->lineEdit->text().toLatin1();
     QByteArray password = ui->lineEdit_2->text().toLatin1();
 
-    QByteArray postData = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
-
-    url.setUrl("http://localhost:3000/user/login");
+    QByteArray postData = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";   
 
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -56,13 +55,13 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
 
     QJsonObject jsonObj = jReply.object();
 
-    if (!jsonObj["success"].toBool()) {
+    if (!jsonObj["success"].toBool())
+    {
         ui->label_3->setText("Identifiants incorrects");
-
         delete reply;
     }
-    else if (reply->error() == QNetworkReply::NoError) {
-
+    else if (reply->error() == QNetworkReply::NoError)
+    {
         this->hide();
         token = new QString(jsonObj["token"].toString());
         Synchro *synchro = new Synchro();
@@ -79,7 +78,8 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
 
         delete reply;
     }
-    else {
+    else
+    {
         delete reply;
     }
 }

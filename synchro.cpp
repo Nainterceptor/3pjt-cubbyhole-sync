@@ -24,8 +24,22 @@ bool Synchro::isEmpty()
 
 void Synchro::doCheck()
 {
-    myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
+    QNetworkAccessManager networkManaget;
+    QUrl url("http://localhost:3000/files/list");
 
+    QNetworkRequest request;
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setUrl(url);
+
+    QNetworkReply *reply = networkManaget.get(request);
+
+    QString sReply = (QString)reply->readAll();
+    QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
+
+    QJsonObject jsonObj = jReply.object();
+    qDebug() << sReply;
+
+    myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
     {
         QFile file(fileInfo.absoluteFilePath());
@@ -35,6 +49,7 @@ void Synchro::doCheck()
         md5.addData(data);
         QByteArray hah = md5.result();
         QString attrMD5 = hah.toHex();
+        qDebug() << fileInfo.baseName();
     }
 }
 
