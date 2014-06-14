@@ -17,11 +17,15 @@ class Synchro : public QNetworkAccessManager
 public:
     explicit Synchro(QWidget *parent = 0);
     bool isEmpty();
-    void doCheck();
     ~Synchro();
 
 private:
     QDir *myDir;
+    QNetworkReply *reply;
+
+public slots:
+    void doList(MainWindow *w);
+    void doCheck(QNetworkReply *reply);
 };
 
 #endif // SYNCHRO_H

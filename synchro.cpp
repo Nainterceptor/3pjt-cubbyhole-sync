@@ -22,22 +22,36 @@ bool Synchro::isEmpty()
     else return false;
 }
 
-void Synchro::doCheck()
+void Synchro::doList(MainWindow *w)
 {
-    QNetworkAccessManager networkManaget;
+    QString token = (QString)w->getToken();
+    QByteArray tokenData = token.toUtf8();
+
     QUrl url("http://localhost:3000/files/list");
 
-    QNetworkRequest request;
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request.setUrl(url);
+    QNetworkRequest request(url);
+    request.setRawHeader("Content-Type", "application/json");
+    request.setRawHeader("token", tokenData );
 
-    QNetworkReply *reply = networkManaget.get(request);
+    QNetworkAccessManager *net = new QNetworkAccessManager;
+    reply = net->get(request);
 
+    connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(doCheck(QNetworkReply*)));
+}
+
+void Synchro::doCheck(QNetworkReply *reply)
+{
     QString sReply = (QString)reply->readAll();
     QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
 
     QJsonObject jsonObj = jReply.object();
-    qDebug() << sReply;
+    QJsonArray jsonArray = jsonObj["files"].toArray();
+
+    QStringList attrMD5;
+    QStringList attrName;
+
+    QStringList fileMD5;
+    QStringList fileName;
 
     myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
@@ -48,8 +62,27 @@ void Synchro::doCheck()
         QCryptographicHash md5(QCryptographicHash::Md5);
         md5.addData(data);
         QByteArray hah = md5.result();
-        QString attrMD5 = hah.toHex();
-        qDebug() << fileInfo.baseName();
+        attrMD5.append(hah.toHex());
+        attrName.append(fileInfo.baseName());
+    }
+
+    foreach (const QJsonValue & value, jsonArray)
+    {
+        QJsonObject obj = value.toObject();
+
+        fileMD5.append(obj["md5"].toString());
+        fileName.append(obj["filename"].toString());
+    }
+
+    foreach (QString file, fileName)
+    {
+        foreach (QString localFile, attrName)
+        {
+            if (file == localFile)
+            {
+                qDebug() << "same";
+            }
+        }
     }
 }
 

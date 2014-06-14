@@ -34,8 +34,10 @@ void IconBarre::explorer()
     if (myDir->exists())
     {
         QDesktopServices::openUrl(QUrl("."));
-    } else {
-        MainWindow *myMain = new MainWindow();
+    }
+    else
+    {
+        MainWindow *myMain;
         myMain->setIconBarre(true, "Répertoire introuvable", "Le répertoire " + myDir->path() + " est introuvable");
     }
 }

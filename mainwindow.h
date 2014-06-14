@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "iconbarre.h"
 #include <QMainWindow>
 #include <QtNetwork>
 #include <QSystemTrayIcon>
@@ -25,11 +24,10 @@ public:
     QString getToken();
     void setIconBarre(bool view, QString title, QString message);
 
-
 private:
     Ui::MainWindow *ui;
-    QNetworkReply *reply;
     QString *token;
+    QNetworkReply *reply;
     IconBarre *myIconBarre;
 
 public slots:

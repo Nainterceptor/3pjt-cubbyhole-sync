@@ -73,7 +73,7 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
         else
         {
             this->setIconBarre(true, "Cubbyhole", "application connectée");
-            synchro->doCheck();
+            synchro->doList(this);
         }
 
         delete reply;
