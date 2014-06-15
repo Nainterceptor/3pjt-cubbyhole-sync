@@ -7,6 +7,7 @@
 #include <QSystemTrayIcon>
 #include <QtNetwork>
 #include <QWidget>
+#include <QMap>
 
 class QNetworkAccessManager;
 
@@ -21,11 +22,21 @@ public:
 
 private:
     QDir *myDir;
+    QString file;
+    QStringList apiFileNames;
+    QStringList localFileNames;
+    QMap<QString, QString> mapApiFiles;
+    QMap<QString, QString> mapLocalFiles;
     QNetworkReply *reply;
+    QString token;
 
 public slots:
     void doList(MainWindow *w);
     void doCheck(QNetworkReply *reply);
+    void doDownload(QString apiFile);
+    void doUpload(QString attrFile);
+    void finished(QNetworkReply *reply);
+    void finishedDownload(QNetworkReply *reply);
 };
 
 #endif // SYNCHRO_H

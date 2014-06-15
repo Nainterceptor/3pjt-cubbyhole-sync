@@ -24,14 +24,14 @@ bool Synchro::isEmpty()
 
 void Synchro::doList(MainWindow *w)
 {
-    QString token = (QString)w->getToken();
+    token = (QString)w->getToken();
     QByteArray tokenData = token.toUtf8();
 
     QUrl url("http://localhost:3000/files/list");
 
     QNetworkRequest request(url);
     request.setRawHeader("Content-Type", "application/json");
-    request.setRawHeader("token", tokenData );
+    request.setRawHeader("token", tokenData);
 
     QNetworkAccessManager *net = new QNetworkAccessManager;
     reply = net->get(request);
@@ -47,12 +47,6 @@ void Synchro::doCheck(QNetworkReply *reply)
     QJsonObject jsonObj = jReply.object();
     QJsonArray jsonArray = jsonObj["files"].toArray();
 
-    QStringList attrMD5;
-    QStringList attrName;
-
-    QStringList fileMD5;
-    QStringList fileName;
-
     myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
     {
@@ -61,29 +55,96 @@ void Synchro::doCheck(QNetworkReply *reply)
         QByteArray data = file.readAll();
         QCryptographicHash md5(QCryptographicHash::Md5);
         md5.addData(data);
-        QByteArray hah = md5.result();
-        attrMD5.append(hah.toHex());
-        attrName.append(fileInfo.baseName());
+
+        localFileNames.append(fileInfo.fileName());
+        mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
     }
 
     foreach (const QJsonValue & value, jsonArray)
     {
         QJsonObject obj = value.toObject();
 
-        fileMD5.append(obj["md5"].toString());
-        fileName.append(obj["filename"].toString());
+        apiFileNames.append(obj["filename"].toString());
+        mapApiFiles.insert(obj["filename"].toString(), obj["_id"].toString());
     }
 
-    foreach (QString file, fileName)
+    foreach (QString apiFile, apiFileNames)
     {
-        foreach (QString localFile, attrName)
+        if (!mapLocalFiles.contains(apiFile))
         {
-            if (file == localFile)
-            {
-                qDebug() << "same";
-            }
+            doDownload(apiFile);
         }
     }
+
+    foreach (QString localFile, localFileNames)
+    {
+        if (!mapApiFiles.contains(localFile))
+        {
+            doUpload(localFile);
+        }
+    }
+}
+
+void Synchro::doDownload(QString apiFile)
+{
+    QByteArray tokenData = token.toUtf8();
+
+    QString apiFileId = mapApiFiles[apiFile];
+    file = apiFile;
+
+    QUrl url("http://localhost:3000/file/download/" + apiFileId);
+    QNetworkRequest request(url);
+    request.setRawHeader("token", tokenData);
+
+    QNetworkAccessManager *net = new QNetworkAccessManager;
+    reply = net->get(request);
+
+    connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedDownload(QNetworkReply*)));
+}
+
+void Synchro::doUpload(QString localFile)
+{
+    QByteArray tokenData = token.toUtf8();
+
+    QUrl url("http://localhost:3000/file/upload");
+
+    QFileInfo fileInfo(myDir->absoluteFilePath(localFile));
+    QFile *file = new QFile(fileInfo.absoluteFilePath());
+
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+    QHttpPart filePart;
+    filePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; filename=\"" + fileInfo.fileName() + "\""));
+    file->open(QIODevice::ReadOnly);
+    filePart.setBodyDevice(file);
+    file->setParent(multiPart);
+
+    multiPart->append(filePart);
+
+    QNetworkRequest request(url);
+    request.setRawHeader("token", tokenData);
+
+    QNetworkAccessManager *net = new QNetworkAccessManager;
+    reply = net->post(request, multiPart);
+    multiPart->setParent(reply);
+
+    connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
+}
+
+void Synchro::finished(QNetworkReply *reply)
+{
+    QString sReply = (QString)reply->readAll();
+    qDebug() << sReply;
+    reply->deleteLater();
+}
+
+void Synchro::finishedDownload(QNetworkReply *reply)
+{
+    QFile file(myDir->path() + "/" + file.fileName());
+    file.open(QIODevice::WriteOnly);
+    file.write(reply->readAll());
+    file.close();
+    reply->deleteLater();
 }
 
 Synchro::~Synchro()
