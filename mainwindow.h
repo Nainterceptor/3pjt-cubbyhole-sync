@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "iconbarre.h"
+#include "synchro.h"
 #include <QMainWindow>
 #include <QtNetwork>
 #include <QSystemTrayIcon>
@@ -9,6 +11,7 @@
 class QNetworkAccessManager;
 class QSystemTrayIcon;
 class IconBarre;
+class Synchro;
 
 namespace Ui {
 class MainWindow;
@@ -29,10 +32,12 @@ private:
     QString *token;
     QNetworkReply *reply;
     IconBarre *myIconBarre;
+    Synchro *synchro;
 
 public slots:
     void login();
     void inscription();
+    void successLogin();
     void finishedSlot(QNetworkReply *reply);
 };
 

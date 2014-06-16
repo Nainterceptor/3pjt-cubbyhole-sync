@@ -1,4 +1,6 @@
 #include "iconbarre.h"
+#include "synchro.h"
+#include "mainwindow.h"
 #include <QSystemTrayIcon>
 #include <QWidget>
 #include <QMenu>
@@ -6,24 +8,28 @@
 #include <QDir>
 #include <QApplication>
 
-IconBarre::IconBarre(QWidget *parent) :
+IconBarre::IconBarre(MainWindow *w, QWidget *parent) :
     QSystemTrayIcon(parent)
 {
     menu = new QMenu();
     myDir = new QDir();
     myDir->setPath("./Synchro");
 
+    QIcon image("../cubbyhole-sync/1.ico");
+    QIcon move("../cubbyhole-sync/2.ico");
+    this->setIcon(image);
+
+    QAction* synchro = new QAction(move, "Synchroniser maintenant", this);
     QAction* explore = new QAction("Ouvrir le dossier Cubbyhole", this);
     QAction* quit = new QAction("Quitter", this);
 
+    menu->addAction(synchro);
     menu->addAction(explore);
     menu->addAction(quit);
 
     this->setContextMenu(menu);
 
-    QIcon image("1.ico");
-    this->setIcon(image);
-
+    connect(synchro, SIGNAL(triggered()), w, SLOT(successLogin()));
     connect(explore, SIGNAL(triggered()), this, SLOT(explorer()));
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(explorer(QSystemTrayIcon::ActivationReason)));
     connect(quit, SIGNAL(triggered()), this, SLOT(quit()));

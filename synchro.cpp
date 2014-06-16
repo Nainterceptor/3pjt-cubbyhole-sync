@@ -22,10 +22,16 @@ bool Synchro::isEmpty()
     else return false;
 }
 
-void Synchro::doList(MainWindow *w)
+void Synchro::startSynchro(MainWindow *w)
 {
     token = (QString)w->getToken();
-    QByteArray tokenData = token.toUtf8();
+    doList();
+}
+
+void Synchro::doList()
+{ 
+    qDebug() << "Début analyse...";
+    tokenData = token.toUtf8();
 
     QUrl url("http://localhost:3000/files/list");
 
@@ -34,7 +40,7 @@ void Synchro::doList(MainWindow *w)
     request.setRawHeader("token", tokenData);
 
     QNetworkAccessManager *net = new QNetworkAccessManager;
-    reply = net->get(request);
+    QNetworkReply *reply = net->get(request);
 
     connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(doCheck(QNetworkReply*)));
 }
@@ -50,12 +56,6 @@ void Synchro::doCheck(QNetworkReply *reply)
     myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
     {
-        QFile file(fileInfo.absoluteFilePath());
-        file.open(QIODevice::ReadOnly);
-        QByteArray data = file.readAll();
-        QCryptographicHash md5(QCryptographicHash::Md5);
-        md5.addData(data);
-
         localFileNames.append(fileInfo.fileName());
         mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
     }
@@ -83,29 +83,32 @@ void Synchro::doCheck(QNetworkReply *reply)
             doUpload(localFile);
         }
     }
+
+    mapApiFiles.clear();
+    mapLocalFiles.clear();
+    apiFileNames.clear();
+    localFileNames.clear();
+    qDebug() << "Analyse ok";
 }
 
 void Synchro::doDownload(QString apiFile)
-{
-    QByteArray tokenData = token.toUtf8();
-
+{   
     QString apiFileId = mapApiFiles[apiFile];
-    file = apiFile;
+    dlFileInfo = apiFile;
 
     QUrl url("http://localhost:3000/file/download/" + apiFileId);
     QNetworkRequest request(url);
     request.setRawHeader("token", tokenData);
 
     QNetworkAccessManager *net = new QNetworkAccessManager;
-    reply = net->get(request);
+    QNetworkReply *reply = net->get(request);
 
     connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedDownload(QNetworkReply*)));
+    qDebug() << "Download...";
 }
 
 void Synchro::doUpload(QString localFile)
 {
-    QByteArray tokenData = token.toUtf8();
-
     QUrl url("http://localhost:3000/file/upload");
 
     QFileInfo fileInfo(myDir->absoluteFilePath(localFile));
@@ -125,7 +128,7 @@ void Synchro::doUpload(QString localFile)
     request.setRawHeader("token", tokenData);
 
     QNetworkAccessManager *net = new QNetworkAccessManager;
-    reply = net->post(request, multiPart);
+    QNetworkReply *reply = net->post(request, multiPart);
     multiPart->setParent(reply);
 
     connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finished(QNetworkReply*)));
@@ -134,17 +137,21 @@ void Synchro::doUpload(QString localFile)
 void Synchro::finished(QNetworkReply *reply)
 {
     QString sReply = (QString)reply->readAll();
-    qDebug() << sReply;
-    reply->deleteLater();
+    qDebug() << "Upload done";
+
+    doList();
 }
 
 void Synchro::finishedDownload(QNetworkReply *reply)
 {
-    QFile file(myDir->path() + "/" + file.fileName());
+    qDebug() << "Download done";
+    QFile file(myDir->path() + "/" + dlFileInfo.fileName());
+    qDebug() << "file create";
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
-    reply->deleteLater();
+
+    doList();
 }
 
 Synchro::~Synchro()

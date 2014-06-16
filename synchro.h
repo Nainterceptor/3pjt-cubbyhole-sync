@@ -10,6 +10,8 @@
 #include <QMap>
 
 class QNetworkAccessManager;
+class MainWindow;
+class IconBarre;
 
 class Synchro : public QNetworkAccessManager
 {
@@ -18,20 +20,21 @@ class Synchro : public QNetworkAccessManager
 public:
     explicit Synchro(QWidget *parent = 0);
     bool isEmpty();
+    void startSynchro(MainWindow *w);
     ~Synchro();
 
 private:
     QDir *myDir;
-    QString file;
+    QFileInfo dlFileInfo;
     QStringList apiFileNames;
     QStringList localFileNames;
     QMap<QString, QString> mapApiFiles;
     QMap<QString, QString> mapLocalFiles;
-    QNetworkReply *reply;
     QString token;
+    QByteArray tokenData;
 
 public slots:
-    void doList(MainWindow *w);
+    void doList();
     void doCheck(QNetworkReply *reply);
     void doDownload(QString apiFile);
     void doUpload(QString attrFile);

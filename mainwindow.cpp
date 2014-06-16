@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    myIconBarre = new IconBarre();
+    myIconBarre = new IconBarre(this);
+    synchro = new Synchro(this);
 
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(inscription()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(login()));
@@ -64,7 +65,6 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
     {
         this->hide();
         token = new QString(jsonObj["token"].toString());
-        Synchro *synchro = new Synchro();
 
         if(synchro->isEmpty() == true)
         {
@@ -73,7 +73,7 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
         else
         {
             this->setIconBarre(true, "Cubbyhole", "application connectée");
-            synchro->doList(this);
+            successLogin();
         }
 
         delete reply;
@@ -82,6 +82,11 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
     {
         delete reply;
     }
+}
+
+void MainWindow::successLogin()
+{
+    synchro->startSynchro(this);
 }
 
 void MainWindow::setIconBarre(bool view, QString title, QString message)
