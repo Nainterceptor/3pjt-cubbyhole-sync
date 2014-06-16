@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     myIconBarre = new IconBarre(this);
-    synchro = new Synchro(this);
+    synchro = new Synchro(myIconBarre, this);
 
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(inscription()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(login()));
@@ -26,7 +26,7 @@ QString MainWindow::getToken()
 
 void MainWindow::inscription()
 {
-    QString link = "http://www.google.com";
+    QString link = "http://localhost:3001/register";
     QDesktopServices::openUrl(QUrl(link));
 }
 

@@ -12,8 +12,10 @@ IconBarre::IconBarre(MainWindow *w, QWidget *parent) :
     QSystemTrayIcon(parent)
 {
     menu = new QMenu();
+    subMenu = new QMenu("Files", menu);
     myDir = new QDir();
     myDir->setPath("./Synchro");
+    menuList = new QStringList();
 
     QIcon image("../cubbyhole-sync/1.ico");
     QIcon move("../cubbyhole-sync/2.ico");
@@ -24,6 +26,7 @@ IconBarre::IconBarre(MainWindow *w, QWidget *parent) :
     QAction* quit = new QAction("Quit", this);
 
     menu->addAction(synchro);
+    menu->addMenu(subMenu);
     menu->addAction(explore);
     menu->addAction(quit);
 
@@ -50,6 +53,27 @@ void IconBarre::explorer(QSystemTrayIcon::ActivationReason reason)
         explorer();
         break;
     }
+}
+
+void IconBarre::addFiles(QStringList files)
+{
+    foreach (QString file, files)
+    {
+        if (!menuList->contains(file))
+        {
+            menuList->append(file);
+
+            QAction *checkFile = new QAction(file, subMenu);
+            checkFile->setCheckable(true);
+            checkFile->setChecked(true);
+            subMenu->addAction(checkFile);
+        }
+    }
+}
+
+QList<QAction*> IconBarre::getSubMenuActions()
+{
+    return subMenu->actions();
 }
 
 IconBarre::~IconBarre()

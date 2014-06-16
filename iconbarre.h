@@ -17,15 +17,19 @@ class IconBarre : public QSystemTrayIcon
 
 public:
     explicit IconBarre(MainWindow *w, QWidget *parent = 0);
+    QList<QAction*> getSubMenuActions();
     ~IconBarre();
 
 private:
     QMenu *menu;
+    QMenu *subMenu;
     QDir *myDir;
+    QStringList *menuList;
 
 public slots:
     void explorer();
     void explorer(QSystemTrayIcon::ActivationReason);
+    void addFiles(QStringList files);
 };
 
 #endif // ICONBARRE_H

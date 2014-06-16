@@ -6,12 +6,15 @@
 #include <QSystemTrayIcon>
 #include <QNetworkAccessManager>
 #include <QWaitCondition>
+#include <QStringList>
 
-Synchro::Synchro(QWidget *parent) :
+Synchro::Synchro(IconBarre *ic, QWidget *parent) :
     QNetworkAccessManager(parent)
 {
     myDir = new QDir();
     myDir->setPath("./Synchro");
+
+    myIconBarre = ic;
 }
 
 bool Synchro::isEmpty()
@@ -48,6 +51,7 @@ void Synchro::doList()
 
 void Synchro::doCheck(QNetworkReply *reply)
 {
+    QList<QAction*> filesAction = myIconBarre->getSubMenuActions();
     QString sReply = (QString)reply->readAll();
     QJsonDocument jReply = QJsonDocument::fromJson(sReply.toUtf8());
 
@@ -58,25 +62,17 @@ void Synchro::doCheck(QNetworkReply *reply)
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
     {
         localFileNames.append(fileInfo.fileName());
-        mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
+        mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());  
     }
 
-    /*
-    myDir->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-    if (myDir->entryInfoList().count() >= 1)
+    myIconBarre->addFiles(localFileNames);
+    for (int i = 0; i < filesAction.size(); i++)
     {
-        foreach (QFileInfo folderInfo, myDir->entryInfoList())
+        if (!filesAction.at(i)->isChecked())
         {
-            QDir folder(folderInfo.path() + "/" + folderInfo.fileName());
-            folder.setFilter(QDir::NoDotAndDotDot | QDir::Files);
-            foreach (QFileInfo fileInfo, folder.entryInfoList())
-            {
-                localFileNames.append(fileInfo.fileName());
-                mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
-            }
+            localFileNames.removeAt(i);
         }
     }
-    */
 
     foreach (const QJsonValue & value, jsonArray)
     {
@@ -102,6 +98,7 @@ void Synchro::doCheck(QNetworkReply *reply)
         }
     }
 
+    fileErase.clear();
     mapApiFiles.clear();
     mapLocalFiles.clear();
     apiFileNames.clear();
