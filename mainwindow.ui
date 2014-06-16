@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Cubbyhole</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>1.ico</normaloff>1.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(223, 223, 223);</string>
   </property>
@@ -39,7 +43,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Connexion</string>
+     <string>Connect</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
@@ -88,7 +92,7 @@
      <rect>
       <x>90</x>
       <y>90</y>
-      <width>51</width>
+      <width>41</width>
       <height>31</height>
      </rect>
     </property>
@@ -107,9 +111,9 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>70</x>
       <y>120</y>
-      <width>111</width>
+      <width>61</width>
       <height>41</height>
      </rect>
     </property>
@@ -119,7 +123,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Mot de passe</string>
+     <string>Password</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -155,7 +159,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>S'inscrire</string>
+     <string>Sign In</string>
     </property>
    </widget>
   </widget>

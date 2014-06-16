@@ -68,11 +68,11 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
 
         if(synchro->isEmpty() == true)
         {
-            this->setIconBarre(true, "Dossiers", "Vous n'avez aucun de document");
+            this->setIconBarre(true, "Folder", "You have no document");
         }
         else
         {
-            this->setIconBarre(true, "Cubbyhole", "application connectée");
+            this->setIconBarre(true, "Cubbyhole", "connected");
             successLogin();
         }
 

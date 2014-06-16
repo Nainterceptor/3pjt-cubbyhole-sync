@@ -19,9 +19,9 @@ IconBarre::IconBarre(MainWindow *w, QWidget *parent) :
     QIcon move("../cubbyhole-sync/2.ico");
     this->setIcon(image);
 
-    QAction* synchro = new QAction(move, "Synchroniser maintenant", this);
-    QAction* explore = new QAction("Ouvrir le dossier Cubbyhole", this);
-    QAction* quit = new QAction("Quitter", this);
+    QAction* synchro = new QAction(move, "Sync Now", this);
+    QAction* explore = new QAction("Open Cubbyhole's Folder", this);
+    QAction* quit = new QAction("Quit", this);
 
     menu->addAction(synchro);
     menu->addAction(explore);
@@ -40,11 +40,6 @@ void IconBarre::explorer()
     if (myDir->exists())
     {
         QDesktopServices::openUrl(QUrl("."));
-    }
-    else
-    {
-        MainWindow *myMain;
-        myMain->setIconBarre(true, "Répertoire introuvable", "Le répertoire " + myDir->path() + " est introuvable");
     }
 }
 

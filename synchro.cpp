@@ -146,7 +146,6 @@ void Synchro::finishedDownload(QNetworkReply *reply)
 {
     qDebug() << "Download done";
     QFile file(myDir->path() + "/" + dlFileInfo.fileName());
-    qDebug() << "file create";
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
