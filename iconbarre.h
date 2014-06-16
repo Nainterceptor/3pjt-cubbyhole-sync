@@ -26,7 +26,6 @@ private:
 public slots:
     void explorer();
     void explorer(QSystemTrayIcon::ActivationReason);
-    void quit();
 };
 
 #endif // ICONBARRE_H

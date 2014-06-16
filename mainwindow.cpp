@@ -84,6 +84,13 @@ void MainWindow::finishedSlot(QNetworkReply *reply)
     }
 }
 
+void MainWindow::quit()
+{
+    synchro->disconnect();
+    myIconBarre->hide();
+    this->close();
+}
+
 void MainWindow::successLogin()
 {
     synchro->startSynchro(this);

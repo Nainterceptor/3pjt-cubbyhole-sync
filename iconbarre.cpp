@@ -32,7 +32,7 @@ IconBarre::IconBarre(MainWindow *w, QWidget *parent) :
     connect(synchro, SIGNAL(triggered()), w, SLOT(successLogin()));
     connect(explore, SIGNAL(triggered()), this, SLOT(explorer()));
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(explorer(QSystemTrayIcon::ActivationReason)));
-    connect(quit, SIGNAL(triggered()), this, SLOT(quit()));
+    connect(quit, SIGNAL(triggered()), w, SLOT(quit()));
 }
 
 void IconBarre::explorer()
@@ -50,12 +50,6 @@ void IconBarre::explorer(QSystemTrayIcon::ActivationReason reason)
         explorer();
         break;
     }
-}
-
-void IconBarre::quit()
-{
-    MainWindow *login = new MainWindow;
-    login->close();
 }
 
 IconBarre::~IconBarre()

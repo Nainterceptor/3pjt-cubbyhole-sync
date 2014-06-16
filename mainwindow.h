@@ -39,6 +39,7 @@ public slots:
     void inscription();
     void successLogin();
     void finishedSlot(QNetworkReply *reply);
+    void quit();
 };
 
 #endif // MAINWINDOW_H

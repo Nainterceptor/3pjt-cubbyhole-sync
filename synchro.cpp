@@ -5,6 +5,7 @@
 #include <QtNetwork>
 #include <QSystemTrayIcon>
 #include <QNetworkAccessManager>
+#include <QWaitCondition>
 
 Synchro::Synchro(QWidget *parent) :
     QNetworkAccessManager(parent)
@@ -60,6 +61,23 @@ void Synchro::doCheck(QNetworkReply *reply)
         mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
     }
 
+    /*
+    myDir->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
+    if (myDir->entryInfoList().count() >= 1)
+    {
+        foreach (QFileInfo folderInfo, myDir->entryInfoList())
+        {
+            QDir folder(folderInfo.path() + "/" + folderInfo.fileName());
+            folder.setFilter(QDir::NoDotAndDotDot | QDir::Files);
+            foreach (QFileInfo fileInfo, folder.entryInfoList())
+            {
+                localFileNames.append(fileInfo.fileName());
+                mapLocalFiles.insert(fileInfo.fileName(), fileInfo.created().toString());
+            }
+        }
+    }
+    */
+
     foreach (const QJsonValue & value, jsonArray)
     {
         QJsonObject obj = value.toObject();
@@ -88,7 +106,6 @@ void Synchro::doCheck(QNetworkReply *reply)
     mapLocalFiles.clear();
     apiFileNames.clear();
     localFileNames.clear();
-    qDebug() << "Analyse ok";
 }
 
 void Synchro::doDownload(QString apiFile)
@@ -136,8 +153,8 @@ void Synchro::doUpload(QString localFile)
 
 void Synchro::finished(QNetworkReply *reply)
 {
-    QString sReply = (QString)reply->readAll();
     qDebug() << "Upload done";
+    reply->deleteLater();
 
     doList();
 }
@@ -149,6 +166,7 @@ void Synchro::finishedDownload(QNetworkReply *reply)
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
+    reply->deleteLater();
 
     doList();
 }
