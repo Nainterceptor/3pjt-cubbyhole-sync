@@ -58,6 +58,8 @@ void Synchro::doCheck(QNetworkReply *reply)
     QJsonObject jsonObj = jReply.object();
     QJsonArray jsonArray = jsonObj["files"].toArray();
 
+    delete reply;
+
     myDir->setFilter(QDir::NoDotAndDotDot | QDir::Files);
     foreach (QFileInfo fileInfo, myDir->entryInfoList())
     {
@@ -98,7 +100,7 @@ void Synchro::doCheck(QNetworkReply *reply)
         }
     }
 
-    fileErase.clear();
+    filesAction.clear();
     mapApiFiles.clear();
     mapLocalFiles.clear();
     apiFileNames.clear();
@@ -106,19 +108,17 @@ void Synchro::doCheck(QNetworkReply *reply)
 }
 
 void Synchro::doDownload(QString apiFile)
-{   
-    QString apiFileId = mapApiFiles[apiFile];
-    dlFileInfo = apiFile;
+{
+    QUrl url("http://localhost:3000/file/download/" + mapApiFiles[apiFile]);
 
-    QUrl url("http://localhost:3000/file/download/" + apiFileId);
     QNetworkRequest request(url);
+    request.setRawHeader("Content-Type", "application/json");
     request.setRawHeader("token", tokenData);
 
     QNetworkAccessManager *net = new QNetworkAccessManager;
     QNetworkReply *reply = net->get(request);
 
     connect(net, SIGNAL(finished(QNetworkReply*)), this, SLOT(finishedDownload(QNetworkReply*)));
-    qDebug() << "Download...";
 }
 
 void Synchro::doUpload(QString localFile)
@@ -156,13 +156,37 @@ void Synchro::finished(QNetworkReply *reply)
     doList();
 }
 
+QByteArray Synchro::fileNameFromContentDisposition(const QByteArray &header)
+{
+    foreach(QByteArray item, header.split(';') )
+    {
+        int equalSignPos = item.indexOf('=');
+        if (equalSignPos == -1)
+            continue;
+        QString key = item.left(equalSignPos).trimmed();
+        if(key.compare("filename", Qt::CaseInsensitive) != 0)
+            continue;
+
+        QByteArray value = item.mid(equalSignPos+1).trimmed();
+        if(value.startsWith('\"') && value.endsWith('\"'))
+        {
+            value = value.mid(1,value.length()-2);
+        }
+        return QByteArray::fromPercentEncoding(value);
+    }
+    return QByteArray();
+}
+
 void Synchro::finishedDownload(QNetworkReply *reply)
 {
-    qDebug() << "Download done";
-    QFile file(myDir->path() + "/" + dlFileInfo.fileName());
+    QString dlFileName = fileNameFromContentDisposition(reply->rawHeader("Content-Disposition"));
+
+    QFile file(myDir->path() + "/" + dlFileName);
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
+
+    qDebug() << "Download done";
     reply->deleteLater();
 
     doList();

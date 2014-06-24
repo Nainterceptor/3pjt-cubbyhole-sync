@@ -21,12 +21,12 @@ public:
     explicit Synchro(IconBarre *ic, QWidget *parent = 0);
     bool isEmpty();
     void startSynchro(MainWindow *w);
+    QByteArray fileNameFromContentDisposition(const QByteArray &header);
     ~Synchro();
 
 private:
     IconBarre *myIconBarre;
     QDir *myDir;
-    QFileInfo dlFileInfo;
     QStringList apiFileNames;
     QStringList localFileNames;
     QStringList fileErase;
